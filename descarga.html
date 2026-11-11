@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Descarga - Ejercicio DESREF</title>
+  <style>
+    :root {
+      --bg-primary: #0b132b;
+      --bg-secondary: #1c2541;
+      --accent-blue: #4361ee;
+      --accent-cyan: #4cc9f0;
+      --text-main: #ffffff;
+      --text-muted: #8d99ae;
+      --card-bg: rgba(28, 37, 65, 0.75);
+      --card-border: rgba(67, 97, 238, 0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #1c2541 0%, #0b132b 100%);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Fondo decorativo con luces sutiles */
+    .bg-decor {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.15;
+    }
+
+    .shape-1 {
+      width: 450px;
+      height: 450px;
+      background: var(--accent-blue);
+      top: -100px;
+      right: -100px;
+    }
+
+    .shape-2 {
+      width: 500px;
+      height: 500px;
+      background: var(--accent-cyan);
+      bottom: -150px;
+      left: -150px;
+    }
+
+    /* Tarjeta Central */
+    .download-card {
+      position: relative;
+      z-index: 1;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1.5rem;
+      padding: 3.5rem 4rem;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+      max-width: 550px;
+      width: 90%;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 2rem;
+      letter-spacing: -0.5px;
+    }
+
+    .btn-download {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--accent-blue) 0%, #3a0ca3 100%);
+      color: var(--text-main);
+      font-size: 1.4rem;
+      font-weight: 700;
+      padding: 1.2rem 2.8rem;
+      border-radius: 0.8rem;
+      text-decoration: none;
+      box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-download:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(67, 97, 238, 0.6);
+      background: linear-gradient(135deg, #4895ef 0%, var(--accent-blue) 100%);
+    }
+
+    .btn-download:active {
+      transform: translateY(-1px);
+    }
+
+    .file-info {
+      margin-top: 1.8rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo Decorativo -->
+  <div class="bg-decor">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+  </div>
+
+  <!-- Contenedor Principal -->
+  <div class="download-card">
+    <h1>Ejercicio Desref</h1>
+    
+    <!-- Enlace de descarga (configura la ruta en href) -->
+    <a href="archivo_practica.odt" download class="btn-download">
+      Descargar
+    </a>
+
+    <div class="file-info">
+      Haz clic para descargar la plantilla de la práctica.
+    </div>
+  </div>
+
+</body>
+</html>

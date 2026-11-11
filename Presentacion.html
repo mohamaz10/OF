@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clase de Ofimática</title>
+  <style>
+    :root {
+      --bg-primary: #0b132b;
+      --bg-secondary: #1c2541;
+      --accent-blue: #4361ee;
+      --accent-cyan: #4cc9f0;
+      --text-main: #ffffff;
+      --text-muted: #8d99ae;
+      --card-bg: rgba(28, 37, 65, 0.7);
+      --card-border: rgba(67, 97, 238, 0.3);
+      --correct: #2ec4b6;
+      --incorrect: #e71d36;
+      --aules-green: #00875a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #1c2541 0%, #0b132b 100%);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fondo decorativo moderno tipo Canva */
+    .bg-decor {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+    }
+
+    .shape-1 {
+      width: 500px;
+      height: 500px;
+      background: var(--accent-blue);
+      top: -100px;
+      right: -100px;
+    }
+
+    .shape-2 {
+      width: 600px;
+      height: 600px;
+      background: var(--accent-cyan);
+      bottom: -200px;
+      left: -200px;
+    }
+
+    /* Deck Container */
+    .slide-deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0.98) translateY(10px);
+      padding: 4rem 8rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Tipografía y Estilos */
+    .tagline {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--accent-cyan);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 3.8rem;
+      color: var(--text-main);
+      margin-bottom: 1.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1px;
+    }
+
+    h1 span {
+      color: var(--accent-cyan);
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: #e2e8f0;
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    p, li {
+      font-size: 1.35rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .highlight {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 2.5rem;
+      margin-top: 1.5rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .code-box {
+      background: #060913;
+      border-left: 4px solid var(--accent-cyan);
+      padding: 1.2rem 2rem;
+      font-family: 'Fira Code', 'Consolas', monospace;
+      font-size: 1.4rem;
+      color: var(--accent-cyan);
+      border-radius: 0.5rem;
+      margin: 1.2rem 0;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    /* Opciones Interactivas */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .option-btn {
+      background: var(--card-bg);
+      border: 2px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.8rem;
+      font-size: 1.3rem;
+      font-family: 'Fira Code', monospace;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.25s ease;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .option-btn:hover {
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .option-btn.correct-ans {
+      background: rgba(46, 196, 182, 0.15) !important;
+      border-color: var(--correct) !important;
+      color: #5eead4 !important;
+    }
+
+    .option-btn.wrong-ans {
+      background: rgba(231, 29, 54, 0.15) !important;
+      border-color: var(--incorrect) !important;
+      color: #fca5a5 !important;
+    }
+
+    /* Feedback */
+    .feedback-container {
+      margin-top: 1.5rem;
+      min-height: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .feedback-text {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .retry-btn {
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.8rem;
+      border-radius: 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: none;
+      transition: opacity 0.2s;
+    }
+
+    .retry-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Controles de Navegación Discretos */
+    .nav-controls {
+      position: fixed;
+      bottom: 2.5rem;
+      right: 3rem;
+      display: flex;
+      gap: 1rem;
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-main);
+      width: 3.2rem;
+      height: 3.2rem;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      backdrop-filter: blur(5px);
+    }
+
+    .nav-btn:hover {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    .slide-counter {
+      position: fixed;
+      bottom: 3rem;
+      left: 3rem;
+      font-size: 1rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      z-index: 100;
+    }
+
+    /* Simulación Simulador Aules */
+    .aules-container {
+      background: #ffffff;
+      color: #1e293b;
+      border-radius: 1rem;
+      overflow: hidden;
+      height: 65vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    }
+
+    .aules-header {
+      background: var(--aules-green);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .aules-body {
+      padding: 2.5rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .download-card {
+      background: #f1f5f9;
+      border-left: 4px solid var(--aules-green);
+      padding: 1.5rem;
+      border-radius: 0.5rem;
+      margin: 1.5rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-download {
+      background: var(--aules-green);
+      color: white;
+      padding: 0.8rem 1.8rem;
+      border-radius: 0.4rem;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-download:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fondo Decorativo Moderno -->
+  <div class="bg-decor">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+  </div>
+
+  <div class="slide-deck" id="deck">
+
+    <!-- Diapositiva 1: Portada -->
+    <div class="slide active">
+      <div class="tagline">Aplicaciones Ofimáticas</div>
+      <h1>DESREF EN LIBREOFICE CALC</h1>
+      <div class="card" style="max-width: 700px;">
+        <p>Estructuras y referencias de forma dinamica.</p>
+      </div>
+    </div>
+
+    <!-- Diapositiva 2: ¿Qué es DESREF? -->
+    <div class="slide">
+      <div class="tagline">Conceptos Clave</div>
+      <h1>¿Qué es <span>DESREF</span>?</h1>
+      <div class="card">
+        <p>Es una función de referencia que sirve para <span class="highlight">apuntar a una o varias celdas</span> de forma dinamica.</p>
+      </div>
+      <h2 style="margin-top: 2rem; font-size: 1.5rem;">Sintaxis:</h2>
+      <div class="code-box">
+        =DESREF(Celda_Base; Filas; Columnas)
+      </div>
+    </div>
+
+    <!-- Diapositiva 3: Ejemplo de uso -->
+    <div class="slide">
+      <div class="tagline">Ejemplo Práctico</div>
+      <h1>Uso Básico de <span>DESREF</span></h1>
+      <div class="card">
+        <p>Partiendo de un valor guardado en la celda <span class="highlight">A1</span>:</p>
+        <div class="code-box">=DESREF(A1; 2; 0)</div>
+        <p style="margin-top: 1rem;">Calc toma <span class="highlight">A1</span> como anclaje, baja <span class="highlight">2 filas</span> y se desplaza <span class="highlight">0 columnas</span>. El resultado devuelto es el contenido de la celda <span class="highlight">A3</span> <strong>si el valor es positivo baja si es negativo sube de celda y en columnas valor positivo se moveria a la derecha y negativo a la izquierda</strong>.</p>
+      </div>
+    </div>
+
+    <!-- Diapositiva 4: Actividad Interactiva 1 -->
+    <div class="slide" id="slide-act1">
+      <div class="tagline">Actividad</div>
+      <h1>Comprueba lo aprendido</h1>
+      <p>Queremos leer el valor exacto de la celda <span class="highlight">B4</span> partiendo desde la celda base <span class="highlight">A1</span>. ¿Cuál es la fórmula correcta?</p>
+      
+      <div class="options-grid">
+        <div class="option-btn" onclick="checkAns(this, false, 1)">=DESREF(A1; 4; 2)</div>
+        <div class="option-btn" onclick="checkAns(this, true, 1)">=DESREF(A1; 3; 1)</div>
+        <div class="option-btn" onclick="checkAns(this, false, 1)">=DESREF(A1; 2; 3)</div>
+        <div class="option-btn" onclick="checkAns(this, false, 1)">=DESREF(B4; 1; 1)</div>
+      </div>
+
+      <div class="feedback-container">
+        <div class="feedback-text" id="fb-1"></div>
+        <button class="retry-btn" id="retry-1" onclick="resetAct(1)">Reintentar</button>
+      </div>
+    </div>
+
+    <!-- Diapositiva 6: Introducción a INDIRECTO -->
+    <div class="slide">
+      <div class="tagline">Nueva Función</div>
+      <h1>La Función <span>INDIRECTO</span></h1>
+      <div class="card">
+        <p>Permite coger un <span class="highlight">texto construido mediante concatenación</span> y transformarlo dinámicamente en una referencia de celda o de hoja válida para Calc.</p>
+      </div>
+      <div class="code-box">
+        =INDIRECTO("Hoja2.A1")
+      </div>
+    </div>
+
+    <!-- Diapositiva 7: La pieza clave -> FILA() -->
+    <div class="slide">
+      <div class="tagline">Deducción en Clase</div>
+      <h1>Construyendo la referencia</h1>
+      <div class="card">
+        <p>Podemos unir bloques de texto usando el operador <code>&amp;</code>:</p>
+        <div class="code-box">=INDIRECTO("ALU" &amp; ... &amp; ".A1")</div>
+      </div>
+    </div>
+
+    <!-- Diapositiva 9: Descarga de Práctica (Aules) -->
+    <!-- Diapositiva 9: Enlace directo a la web del ejercicio -->
+    <div class="slide">
+      <div class="tagline">Práctica Guiada</div>
+      <h1>Zona de Descarga</h1>
+      <div class="card" style="text-align: center; padding: 4rem 2rem; border-color: var(--accent-cyan);">
+        <p style="font-size: 1.8rem; color: var(--text-main); margin-bottom: 2rem;">
+          Acceded a la siguiente dirección para descargar la plantilla del ejercicio:
+        </p>
+        
+        <div style="background: #060913; border: 2px dashed var(--accent-cyan); border-radius: 1rem; padding: 2.5rem; margin: 1rem 0;">
+          <a href="https://aules.edu.gva.es" target="_blank" style="font-size: 3.5rem; font-weight: 800; color: var(--accent-cyan); text-decoration: none; font-family: 'Fira Code', monospace; letter-spacing: 1px;">
+            https://aules.edu.gva.es
+          </a>
+        </div>
+
+        <p style="font-size: 1.4rem; color: var(--text-muted); margin-top: 2rem;">
+        </p>
+      </div>
+    </div>
+
+  <!-- Controles de Navegación -->
+  <div class="slide-counter" id="counter">01 / 09</div>
+  <div class="nav-controls">
+    <div class="nav-btn" onclick="prevSlide()">❮</div>
+    <div class="nav-btn" onclick="nextSlide()">❯</div>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const counter = document.getElementById('counter');
+
+    function updateSlideView() {
+      slides.forEach((s, i) => {
+        s.classList.remove('active');
+        if (i === currentSlide) s.classList.add('active');
+      });
+      counter.textContent = `${String(currentSlide + 1).padStart(2, '0')} / ${String(slides.length).padStart(2, '0')}`;
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlideView();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlideView();
+      }
+    }
+
+    // Navegación por teclado
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'Space') {
+        e.preventDefault();
+        nextSlide();
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    // Lógica interactiva de las actividades en pizarra táctil
+    function checkAns(btn, isCorrect, actNum) {
+      const parentContainer = btn.parentElement;
+      const options = parentContainer.querySelectorAll('.option-btn');
+      const fb = document.getElementById(`fb-${actNum}`);
+      const retryBtn = document.getElementById(`retry-${actNum}`);
+
+      options.forEach(opt => opt.style.pointerEvents = 'none');
+
+      if (isCorrect) {
+        btn.classList.add('correct-ans');
+        fb.textContent = '¡Correcto! Respuesta validada.';
+        fb.style.color = 'var(--correct)';
+      } else {
+        btn.classList.add('wrong-ans');
+        fb.textContent = 'Incorrecto. Revise la sintaxis.';
+        fb.style.color = 'var(--incorrect)';
+        retryBtn.style.display = 'block';
+      }
+    }
+
+    function resetAct(actNum) {
+      const slide = document.getElementById(`slide-act${actNum}`);
+      const options = slide.querySelectorAll('.option-btn');
+      const fb = document.getElementById(`fb-${actNum}`);
+      const retryBtn = document.getElementById(`retry-${actNum}`);
+
+      options.forEach(opt => {
+        opt.classList.remove('correct-ans', 'wrong-ans');
+        opt.style.pointerEvents = 'auto';
+      });
+
+      fb.textContent = '';
+      retryBtn.style.display = 'none';
+    }
+
+    updateSlideView();
+  </script>
+</body>
+</html>
